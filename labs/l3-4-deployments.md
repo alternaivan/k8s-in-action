@@ -74,5 +74,13 @@ Rollback the deployment to its first revision:
 kubectl rollout undo deployment/nginx-deployment --to-revision=1
 ```
 
+## Bonus: Provide Description to rollout/deployment
+
+You can also provide/update the `CHANGE-CAUSE` for the deployment by using the following command:
+
+```bash
+kubectl patch deployment nginx-deployment --patch '{"metadata": {"annotations": {"kubernetes.io/change-cause": "Upgrade nginx"}}}'
+```
+
 Remember to replace `nginx-deployment`, `nginx`, `nginx:1.14.2`, `80`, and `<pod-name>` with your actual deployment name, app label, image, container port, and pod name.
 

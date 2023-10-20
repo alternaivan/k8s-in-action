@@ -2,26 +2,18 @@
 
 This guide will help you set up `kubectl` and connect to your Kubernetes cluster.
 
-## Step 1: Copy Kubeconfig
-
-First, you need to copy our kubeconfig file to your local machine. This file should be located in the `~/.kube` directory. File is provided by the lecturer.
-
-```bash
-cp /path/to/your/kubeconfig ~/.kube/config
-```
-
-## Step 2: Install kubectl
+## Step 1: Install kubectl
 
 Next, install kubectl, which is the Kubernetes command-line tool. You can install it by following instructions from [this link](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
 
 
-## Step 3: Install Google Cloud SDK and gcloud plugin
+## Step 2: Install Google Cloud SDK and gcloud plugin
 
 We will interact with Kubernetes cluster running on GCP (GKE). That's why we need to follow this step.
 
 Install the Google Cloud SDK, which includes the gcloud command-line tool. Also, install the kubectl plugin for gcloud. Instructions are on the [following link](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl).
 
-## Step 4: Perform Login
+## Step 3: Perform Login
 
 Log in to your (or lab) Google Cloud account:
 
@@ -29,7 +21,15 @@ Log in to your (or lab) Google Cloud account:
 gcloud auth login
 ```
 
-Follow the prompts to authorize the gcloud tool to use your Google Cloud account.
+Follow the prompts to authorize the gcloud tool to use test (or your) Google Cloud account.
+
+## Step 4: Update kubeconfig with gcloud
+
+Connect to the cluster by updating the kubeconfig:
+
+```shell
+gcloud container clusters get-credentials lab-cluster --zone europe-west3-c --project planar-cycle-402215
+```
 
 ## Step 5: Test Connection
 
