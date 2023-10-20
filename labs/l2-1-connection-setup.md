@@ -8,6 +8,7 @@ First, you need to copy our kubeconfig file to your local machine. This file sho
 
 ```bash
 cp /path/to/your/kubeconfig ~/.kube/config
+```
 
 ## Step 2: Install kubectl
 
@@ -59,7 +60,7 @@ Here's an example command:
 
 ```bash
 kubectl get pods my-pod
-```bash
+```
 
 In this example, get is the command, pods is the type, and my-pod is the name of the resource we're retrieving information about.
 
