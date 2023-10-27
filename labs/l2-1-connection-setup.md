@@ -28,7 +28,7 @@ Follow the prompts to authorize the gcloud tool to use test (or your) Google Clo
 Connect to the cluster by updating the kubeconfig:
 
 ```shell
-gcloud container clusters get-credentials lab-cluster --zone europe-west3-c --project planar-cycle-402215
+gcloud container clusters get-credentials LOCATION --zone ZONE --project PROJECT_NAME
 ```
 
 ## Step 5: Test Connection

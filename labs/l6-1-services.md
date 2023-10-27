@@ -13,7 +13,7 @@ kubectl run my-pod --image=nginx --restart=Never --port=80
 Now create a Service tied to the Pod
 
 ```bash
-kubectl expose pod my-pod --name=my-service --target-port=80 --type=NodePort
+kubectl expose pod my-pod --name=my-service --target-port=80 --type=ClusterIP
 ```
 
 ## Step 2. Demonstrate a Connection from Another Pod

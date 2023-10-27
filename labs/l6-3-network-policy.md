@@ -4,32 +4,42 @@
 
 This exercise will guide you through the process of creating a NetworkPolicy from a manifest, demonstrating a connection, denying a connection, removing the NetworkPolicy, and observing the outcome.
 
-## Step 1. Create a NetworkPolicy from Manifest
 
-First, we need to create a NetworkPolicy. This is done by applying a manifest file which describes the policy. Here's an example of how to do it:
+## Step 1. Demonstrate the Default Connection
+
+As a first step before applying network policies, we'll create a deployment, expose it, and test if the connection to it is working.
+
+```bash
+kubectl create deployment nginx --image=nginx
+kubectl expose deployment nginx --port=80
+```
+
+Now create another Pod to test the connection.
+
+```bash
+kubectl run test-pod --image=busybox --restart=Never --rm -it -- wget -qO- http://nginx.default.svc.cluster.local:80
+```
+
+Is it allowed or denied? Why?
+
+## Step 2. Create a NetworkPolicy from Manifest
+
+Next, we need to create a NetworkPolicy. This is done by applying a manifest file which describes the policy. Here's an example of how to do it:
 
 ```yaml
-cat <<EOF > network-policy.yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: test-network-policy
+  name: access-nginx
 spec:
   podSelector:
     matchLabels:
-      role: db
-  policyTypes:
-  - Ingress
+      app: nginx
   ingress:
   - from:
-    - ipBlock:
-        cidr: 172.17.0.0/16
-        except:
-        - 172.17.1.0/24
-    ports:
-    - protocol: TCP
-      port: 6379
-EOF
+    - podSelector:
+        matchLabels:
+          access: "true"
 ```
 
 Now we need to apply the NetworkPolicy with the following command.
@@ -38,29 +48,26 @@ Now we need to apply the NetworkPolicy with the following command.
 kubectl apply -f network-policy.yaml
 ```
 
-## Step 2. Demonstrate the Connection
+## Step 3. Demonstrate Connection
 
-Next, we need to demonstrate that the connection is allowed by the NetworkPolicy. We can do this by creating a Pod that matches the role: db label and trying to connect to it:
-
-```bash
-kubectl run db-pod --image=redis --labels=role=db --restart=Never --port=6379
-```
-
-Now create another Pod to test the connection.
+Now, let's test if we are able to connect directly to the resource. We'll use the same command as above: 
 
 ```bash
-kubectl run test-pod --image=busybox --restart=Never --rm -it -- wget -qO- http://db-pod.default.svc.cluster.local:6379
+kubectl run denied-pod --image=busybox --restart=Never --rm -it -- wget -qO- http://nginx.default.svc.cluster.local:80 --timeout 10
 ```
 
-## Step 3. Demonstrate Denying Connection
+You should see that the connection is denied.
 
-Now, let's demonstrate that the connection is denied when it does not meet the criteria specified in the NetworkPolicy. We will do this by creating another Pod with a different IP (e.g., 172.17.1.5) to test the connection
+### Allowing Connection
+
+To check if the Network policy is working properly, we will test if we are able to connect to the pod with the following command:
 
 ```bash
-kubectl run denied-pod --image=busybox --restart=Never --rm -it -- wget -qO- http://db-pod.default.svc.cluster.local:6379
+kubectl run test-pod --labels="access=true" --image=busybox --restart=Never --rm -it -- wget -qO- http://nginx.default.svc.cluster.local:80 --timeout 10
 ```
 
-You should see that the connection fails because the denied-pod does not meet the criteria specified in the test-network-policy.
+The connection should be working. Why?
+
 
 ## Step 4. Remove the NetworkPolicy and See the Outcome
 
@@ -73,7 +80,7 @@ kubectl delete networkpolicy test-network-policy
 Now try to connect from the denied Pod again:
 
 ```bash
-kubectl run denied-pod --image=busybox --restart=Never --rm -it -- wget -qO- http://db-pod.default.svc.cluster.local:6379
+kubectl run denied-pod --image=busybox --restart=Never --rm -it -- wget -qO- http://nginx.default.svc.cluster.local:80 --timeout 10
 ```
 
 You should see that the connection is now successful because the test-network-policy no longer exists.

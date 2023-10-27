@@ -1,6 +1,6 @@
 # Kubernetes Persistent Volumes - Static Provisioning Exercise
 
-## Step 1: Create a PV Manifest
+## Step 1: Create a PV, and a PVC Manifests
 
 First, we need to create a Persistent Volume (PV) manifest. Here's an example:
 
@@ -16,14 +16,34 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: slow
-  hostPath:
-    path: /data/my-pv
 ```
 
-Save this as my-pv.yaml and create the PV with kubectl apply -f my-pv.yaml.
+Save this as my-pv.yaml and create the PV with 
 
-## Step 2: Create a Deployment Which Uses the PV
+```shell
+kubectl apply -f my-pv.yaml
+```
+
+Now, create a PVC manifest with a following example.
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+```
+
+```shell
+kubectl apply -f my-pvc.yaml
+```
+
+## Step 2: Create a Deployment Which Uses the PVC
 
 Next, we need to create a Deployment that uses the PV. Here's an example of a Deployment that uses the PV:
 
@@ -33,7 +53,7 @@ kind: Deployment
 metadata:
   name: my-deployment
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -64,8 +84,18 @@ To test the persistence, you can write some data to the mounted path in one of t
 
 ## Step 4: Delete the Deployment and See What Happens
 
-Finally, delete the Deployment with kubectl delete -f my-deployment.yaml. Because we set persistentVolumeReclaimPolicy to Retain in our PV, the data will not be deleted when the Deployment is deleted. You can verify this by recreating the Deployment and checking the data.
+Finally, delete the Deployment with 
 
-Remember to clean up after you're done with kubectl delete -f my-pv.yaml.
+```shell
+kubectl delete -f my-deployment.yaml
+```
+
+Because we set persistentVolumeReclaimPolicy to Retain in our PV, the data will not be deleted when the Deployment is deleted. You can verify this by recreating the Deployment and checking the data.
+
+Remember to clean up after you're done with 
+
+```shell
+kubectl delete -f my-pv.yaml.
+```
 
 That's it! You've successfully completed the exercise on Kubernetes Persistent Volumes.
