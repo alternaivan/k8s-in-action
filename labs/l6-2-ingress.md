@@ -32,7 +32,8 @@ spec:
       containers:
       - name: hello-app-1
         image: "us-docker.pkg.dev/google-samples/containers/gke/hello-app:1.0"
-        port: 80
+        ports:
+        - containerPort: 50000
         env:
         - name: "PORT"
           value: "50000"
@@ -88,6 +89,8 @@ spec:
       containers:
       - name: hello-app-2
         image: "us-docker.pkg.dev/google-samples/containers/gke/hello-app:2.0"
+        ports:
+        - containerPort: 8080
         env:
         - name: "PORT"
           value: "8080"
